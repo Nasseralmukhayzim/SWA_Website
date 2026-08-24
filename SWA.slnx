@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/SWA.Api/SWA.Api.csproj" />
+    <Project Path="src/SWA.Application/SWA.Application.csproj" />
+    <Project Path="src/SWA.Domain/SWA.Domain.csproj" />
+    <Project Path="src/SWA.Infrastructure/SWA.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/SWA.Api.Tests/SWA.Api.Tests.csproj" />
+    <Project Path="tests/SWA.Application.Tests/SWA.Application.Tests.csproj" />
+  </Folder>
+</Solution>

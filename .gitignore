@@ -1,0 +1,11 @@
+.vs/
+**/bin/
+**/obj/
+
+*.user
+*.suo
+
+*.nupkg
+packages/
+
+appsettings.Local.json
