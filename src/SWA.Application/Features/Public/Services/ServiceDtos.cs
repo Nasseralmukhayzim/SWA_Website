@@ -43,4 +43,10 @@ public sealed record ServiceDetailDto(
     // ("business") is not something to put in front of a reader.
     IReadOnlyList<string> AudienceNames,
     IReadOnlyList<string> ChannelNames,
+    // The same two lookups the list carries: the detail page shows all three as tags under the
+    // title, so it needs the names, and it finds related services by matching the category slug.
+    string? CategorySlug,
+    string? CategoryName,
+    string? ActivityTypeSlug,
+    string? ActivityTypeName,
     DateTime? UpdatedAtUtc);

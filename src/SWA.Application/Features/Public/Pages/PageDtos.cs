@@ -13,7 +13,10 @@ public sealed record PageDetailDto(
     Guid? HeroImageId,
     Guid? ParentId,
     bool ShowInNavigation,
-    IReadOnlyList<PageSectionDto> Sections);
+    IReadOnlyList<PageSectionDto> Sections,
+    // The designs close every content page with a "last modified" line, so the date has to travel
+    // with the page rather than being looked up separately.
+    DateTime? UpdatedAtUtc);
 
 public sealed record PageSectionDto(string Kind, string? Heading, string? Intro, string? Body, IReadOnlyList<PageSectionItemDto> Items);
 
