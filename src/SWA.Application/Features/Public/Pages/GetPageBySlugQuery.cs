@@ -9,7 +9,12 @@ using SWA.Domain.Content.Pages;
 
 namespace SWA.Application.Features.Public.Pages;
 
-public sealed record GetPageBySlugQuery(string Slug, string? Lang) : IRequest<PageDetailDto>;
+public sealed record GetPageBySlugQuery(string Slug, string? Lang) : IRequest<PageDetailDto>, ICacheableQuery
+{
+    public string CacheGroup => "Pages";
+    public string CacheKey => $"slug:{Slug}:{Lang}";
+    public TimeSpan CacheDuration => TimeSpan.FromMinutes(10);
+}
 
 public sealed class GetPageBySlugQueryHandler(IRepository<Page> repository, PublicContentOptions options) : IRequestHandler<GetPageBySlugQuery, PageDetailDto>
 {
@@ -49,6 +54,7 @@ public sealed class GetPageBySlugQueryHandler(IRepository<Page> repository, Publ
             page.HeroImageId,
             page.ParentId,
             page.ShowInNavigation,
-            sections);
+            sections,
+            page.UpdatedAtUtc);
     }
 }

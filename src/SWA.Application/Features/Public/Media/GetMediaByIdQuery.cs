@@ -5,7 +5,12 @@ using SWA.Domain.Media;
 
 namespace SWA.Application.Features.Public.Media;
 
-public sealed record GetMediaByIdQuery(Guid Id) : IRequest<MediaAssetDto>;
+public sealed record GetMediaByIdQuery(Guid Id) : IRequest<MediaAssetDto>, ICacheableQuery
+{
+    public string CacheGroup => "Media";
+    public string CacheKey => $"{Id}";
+    public TimeSpan CacheDuration => TimeSpan.FromMinutes(30);
+}
 
 public sealed class GetMediaByIdQueryHandler(IRepository<MediaAsset> repository) : IRequestHandler<GetMediaByIdQuery, MediaAssetDto>
 {

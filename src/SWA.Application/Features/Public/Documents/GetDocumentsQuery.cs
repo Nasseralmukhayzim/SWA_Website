@@ -10,7 +10,12 @@ using SWA.Domain.Enums;
 namespace SWA.Application.Features.Public.Documents;
 
 public sealed record GetDocumentsQuery(string? Lang, int? Section, Guid? CategoryId, int? Year, int Page = 1, int PageSize = 20)
-    : IRequest<PagedResult<DocumentListItemDto>>;
+    : IRequest<PagedResult<DocumentListItemDto>>, ICacheableQuery
+{
+    public string CacheGroup => "Documents";
+    public string CacheKey => $"list:{Lang}:{Section}:{CategoryId}:{Year}:{Page}:{PageSize}";
+    public TimeSpan CacheDuration => TimeSpan.FromMinutes(15);
+}
 
 public sealed class GetDocumentsQueryHandler(IRepository<Document> repository, PublicContentOptions options) : IRequestHandler<GetDocumentsQuery, PagedResult<DocumentListItemDto>>
 {

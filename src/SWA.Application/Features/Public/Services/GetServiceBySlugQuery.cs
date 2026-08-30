@@ -9,7 +9,12 @@ using SWA.Domain.Content.Services;
 
 namespace SWA.Application.Features.Public.Services;
 
-public sealed record GetServiceBySlugQuery(string Slug, string? Lang) : IRequest<ServiceDetailDto>;
+public sealed record GetServiceBySlugQuery(string Slug, string? Lang) : IRequest<ServiceDetailDto>, ICacheableQuery
+{
+    public string CacheGroup => "Services";
+    public string CacheKey => $"slug:{Slug}:{Lang}";
+    public TimeSpan CacheDuration => TimeSpan.FromMinutes(10);
+}
 
 public sealed class GetServiceBySlugQueryHandler(IRepository<Service> repository, PublicContentOptions options) : IRequestHandler<GetServiceBySlugQuery, ServiceDetailDto>
 {
@@ -24,12 +29,21 @@ public sealed class GetServiceBySlugQueryHandler(IRepository<Service> repository
             .Include(s => s.Translations)
             .Include(s => s.Audiences).ThenInclude(a => a.Translations)
             .Include(s => s.Channels).ThenInclude(c => c.Translations)
+            .Include(s => s.ServiceCategory!).ThenInclude(c => c.Translations)
+            .Include(s => s.ServiceActivityType!).ThenInclude(a => a.Translations)
             .PubliclyVisible(options)
             .FirstOrDefaultAsync(s => s.Slug == slug, cancellationToken)
             ?? throw new NotFoundException(nameof(Service), request.Slug);
 
         var translation = TranslationSelector.Pick(service.Translations, request.Lang)
             ?? throw new NotFoundException(nameof(Service), request.Slug);
+
+        var categoryName = service.ServiceCategory is null
+            ? null
+            : TranslationSelector.Pick(service.ServiceCategory.Translations, request.Lang)?.Name;
+        var activityTypeName = service.ServiceActivityType is null
+            ? null
+            : TranslationSelector.Pick(service.ServiceActivityType.Translations, request.Lang)?.Name;
 
         return new ServiceDetailDto(
             service.Id,
@@ -60,6 +74,10 @@ public sealed class GetServiceBySlugQueryHandler(IRepository<Service> repository
                 .Where(name => !string.IsNullOrWhiteSpace(name))
                 .Select(name => name!)
                 .ToList(),
+            service.ServiceCategory?.Slug.Value,
+            categoryName,
+            service.ServiceActivityType?.Slug.Value,
+            activityTypeName,
             service.UpdatedAtUtc);
     }
 }

@@ -10,7 +10,12 @@ using SWA.Domain.Enums;
 namespace SWA.Application.Features.Public.Services;
 
 public sealed record GetServicesQuery(string? Lang, int? DeliveryType, Guid? AudienceId, Guid? ChannelId, Guid? CategoryId, Guid? ActivityTypeId, bool? IsFeatured, int Page = 1, int PageSize = 20)
-    : IRequest<PagedResult<ServiceListItemDto>>;
+    : IRequest<PagedResult<ServiceListItemDto>>, ICacheableQuery
+{
+    public string CacheGroup => "Services";
+    public string CacheKey => $"list:{Lang}:{DeliveryType}:{AudienceId}:{ChannelId}:{CategoryId}:{ActivityTypeId}:{IsFeatured}:{Page}:{PageSize}";
+    public TimeSpan CacheDuration => TimeSpan.FromMinutes(10);
+}
 
 public sealed class GetServicesQueryHandler(IRepository<Service> repository, PublicContentOptions options) : IRequestHandler<GetServicesQuery, PagedResult<ServiceListItemDto>>
 {

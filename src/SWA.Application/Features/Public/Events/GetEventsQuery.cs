@@ -8,7 +8,12 @@ using SWA.Domain.Content.Events;
 
 namespace SWA.Application.Features.Public.Events;
 
-public sealed record GetEventsQuery(string? Lang, bool? Upcoming, Guid? EventTypeId, int Page = 1, int PageSize = 20) : IRequest<PagedResult<EventListItemDto>>;
+public sealed record GetEventsQuery(string? Lang, bool? Upcoming, Guid? EventTypeId, int Page = 1, int PageSize = 20) : IRequest<PagedResult<EventListItemDto>>, ICacheableQuery
+{
+    public string CacheGroup => "Events";
+    public string CacheKey => $"list:{Lang}:{Upcoming}:{EventTypeId}:{Page}:{PageSize}";
+    public TimeSpan CacheDuration => TimeSpan.FromMinutes(5);
+}
 
 public sealed class GetEventsQueryHandler(IRepository<Event> repository, PublicContentOptions options) : IRequestHandler<GetEventsQuery, PagedResult<EventListItemDto>>
 {

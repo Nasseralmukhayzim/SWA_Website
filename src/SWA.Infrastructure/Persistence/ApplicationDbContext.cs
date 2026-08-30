@@ -47,10 +47,21 @@ public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> 
 
     public DbSet<MediaAsset> MediaAssets => Set<MediaAsset>();
 
+    public DbSet<CacheGroupVersion> CacheGroupVersions => Set<CacheGroupVersion>();
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
         builder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
+
+        // Owned and written to by the CMS's own migrations — this app only ever reads it, so it
+        // must never show up as a pending change when this app's own migrations are generated.
+        builder.Entity<CacheGroupVersion>(entity =>
+        {
+            entity.ToTable("CacheGroupVersions", table => table.ExcludeFromMigrations());
+            entity.HasKey(v => v.GroupName);
+            entity.Property(v => v.GroupName).HasMaxLength(50).IsUnicode(false);
+        });
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

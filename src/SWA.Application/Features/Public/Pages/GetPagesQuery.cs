@@ -9,7 +9,12 @@ using SWA.Domain.Content.Pages;
 namespace SWA.Application.Features.Public.Pages;
 
 public sealed record GetPagesQuery(string? Lang, Guid? ParentId, bool? ShowInNavigation, int Page = 1, int PageSize = 20)
-    : IRequest<PagedResult<PageListItemDto>>;
+    : IRequest<PagedResult<PageListItemDto>>, ICacheableQuery
+{
+    public string CacheGroup => "Pages";
+    public string CacheKey => $"list:{Lang}:{ParentId}:{ShowInNavigation}:{Page}:{PageSize}";
+    public TimeSpan CacheDuration => TimeSpan.FromMinutes(10);
+}
 
 public sealed class GetPagesQueryHandler(IRepository<Page> repository, PublicContentOptions options) : IRequestHandler<GetPagesQuery, PagedResult<PageListItemDto>>
 {
