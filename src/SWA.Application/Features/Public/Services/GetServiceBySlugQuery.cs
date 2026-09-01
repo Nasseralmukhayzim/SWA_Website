@@ -9,11 +9,11 @@ using SWA.Domain.Content.Services;
 
 namespace SWA.Application.Features.Public.Services;
 
-public sealed record GetServiceBySlugQuery(string Slug, string? Lang) : IRequest<ServiceDetailDto>, ICacheableQuery
+public sealed record GetServiceBySlugQuery(string Slug, string Lang) : IRequest<ServiceDetailDto>, ICacheableQuery
 {
     public string CacheGroup => "Services";
     public string CacheKey => $"slug:{Slug}:{Lang}";
-    public TimeSpan CacheDuration => TimeSpan.FromMinutes(10);
+    public TimeSpan CacheDuration => CacheDurations.LongLived;
 }
 
 public sealed class GetServiceBySlugQueryHandler(IRepository<Service> repository, PublicContentOptions options) : IRequestHandler<GetServiceBySlugQuery, ServiceDetailDto>

@@ -9,11 +9,11 @@ using SWA.Domain.Content.News;
 
 namespace SWA.Application.Features.Public.News;
 
-public sealed record GetNewsBySlugQuery(string Slug, string? Lang) : IRequest<NewsDetailDto>, ICacheableQuery
+public sealed record GetNewsBySlugQuery(string Slug, string Lang) : IRequest<NewsDetailDto>, ICacheableQuery
 {
     public string CacheGroup => "News";
     public string CacheKey => $"slug:{Slug}:{Lang}";
-    public TimeSpan CacheDuration => TimeSpan.FromMinutes(5);
+    public TimeSpan CacheDuration => CacheDurations.LongLived;
 }
 
 public sealed class GetNewsBySlugQueryHandler(IRepository<NewsArticle> repository, PublicContentOptions options) : IRequestHandler<GetNewsBySlugQuery, NewsDetailDto>

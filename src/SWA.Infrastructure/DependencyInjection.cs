@@ -1,11 +1,14 @@
+using Elastic.Clients.Elasticsearch;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using StackExchange.Redis;
 using SWA.Application.Common.Interfaces;
+using SWA.Application.Common.Search;
 using SWA.Infrastructure.Caching;
 using SWA.Infrastructure.Persistence;
 using SWA.Infrastructure.Persistence.Repositories;
+using SWA.Infrastructure.Search;
 
 namespace SWA.Infrastructure;
 
@@ -39,6 +42,12 @@ public static class DependencyInjection
         // only one still using Redis, and only for the actual cached response bodies above.
         services.AddMemoryCache();
         services.AddScoped<ICacheVersionProvider, SqlCacheVersionProvider>();
+
+        var esOptions = configuration.GetSection(ElasticsearchOptions.SectionName).Get<ElasticsearchOptions>() ?? new ElasticsearchOptions();
+        services.AddSingleton(esOptions);
+        services.AddSingleton(new ElasticsearchClient(new ElasticsearchClientSettings(new Uri(esOptions.Uri)).DefaultIndex(esOptions.IndexName)));
+        services.AddSingleton<ISearchIndexer, ElasticsearchIndexer>();
+        services.AddHostedService<SearchSyncBackgroundService>();
 
         return services;
     }

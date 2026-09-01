@@ -9,7 +9,7 @@ public sealed record GetMediaByIdQuery(Guid Id) : IRequest<MediaAssetDto>, ICach
 {
     public string CacheGroup => "Media";
     public string CacheKey => $"{Id}";
-    public TimeSpan CacheDuration => TimeSpan.FromMinutes(30);
+    public TimeSpan CacheDuration => CacheDurations.LongLived;
 }
 
 public sealed class GetMediaByIdQueryHandler(IRepository<MediaAsset> repository) : IRequestHandler<GetMediaByIdQuery, MediaAssetDto>

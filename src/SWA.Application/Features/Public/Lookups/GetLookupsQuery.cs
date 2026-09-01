@@ -9,11 +9,11 @@ using SWA.Domain.Content.Services;
 
 namespace SWA.Application.Features.Public.Lookups;
 
-public sealed record GetLookupsQuery(LookupKey Key, string? Lang) : IRequest<IReadOnlyList<LookupDto>>, ICacheableQuery
+public sealed record GetLookupsQuery(LookupKey Key, string Lang) : IRequest<IReadOnlyList<LookupDto>>, ICacheableQuery
 {
     public string CacheGroup => "Lookups";
     public string CacheKey => $"{Key}:{Lang}";
-    public TimeSpan CacheDuration => TimeSpan.FromMinutes(30);
+    public TimeSpan CacheDuration => CacheDurations.LongLived;
 }
 
 public sealed class GetLookupsQueryHandler(

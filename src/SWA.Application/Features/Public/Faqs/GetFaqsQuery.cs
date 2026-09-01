@@ -9,11 +9,11 @@ using SWA.Domain.Content.Faqs;
 namespace SWA.Application.Features.Public.Faqs;
 
 /// <summary>FAQs are shown as an accordion grouped by category, not navigated to individually — no slug-detail endpoint.</summary>
-public sealed record GetFaqsQuery(string? Lang, Guid? CategoryId, int Page = 1, int PageSize = 100) : IRequest<PagedResult<FaqListItemDto>>, ICacheableQuery
+public sealed record GetFaqsQuery(string Lang, Guid? CategoryId, int Page = 1, int PageSize = 100) : IRequest<PagedResult<FaqListItemDto>>, ICacheableQuery
 {
     public string CacheGroup => "Faqs";
     public string CacheKey => $"list:{Lang}:{CategoryId}:{Page}:{PageSize}";
-    public TimeSpan CacheDuration => TimeSpan.FromMinutes(15);
+    public TimeSpan CacheDuration => CacheDurations.LongLived;
 }
 
 public sealed class GetFaqsQueryHandler(IRepository<Faq> repository, PublicContentOptions options) : IRequestHandler<GetFaqsQuery, PagedResult<FaqListItemDto>>

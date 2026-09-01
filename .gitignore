@@ -9,3 +9,5 @@
 packages/
 
 appsettings.Local.json
+
+.playwright-cli/

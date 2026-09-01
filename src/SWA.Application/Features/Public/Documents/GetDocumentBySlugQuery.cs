@@ -9,11 +9,11 @@ using SWA.Domain.Content.Documents;
 
 namespace SWA.Application.Features.Public.Documents;
 
-public sealed record GetDocumentBySlugQuery(string Slug, string? Lang) : IRequest<DocumentDetailDto>, ICacheableQuery
+public sealed record GetDocumentBySlugQuery(string Slug, string Lang) : IRequest<DocumentDetailDto>, ICacheableQuery
 {
     public string CacheGroup => "Documents";
     public string CacheKey => $"slug:{Slug}:{Lang}";
-    public TimeSpan CacheDuration => TimeSpan.FromMinutes(15);
+    public TimeSpan CacheDuration => CacheDurations.LongLived;
 }
 
 public sealed class GetDocumentBySlugQueryHandler(IRepository<Document> repository, PublicContentOptions options) : IRequestHandler<GetDocumentBySlugQuery, DocumentDetailDto>
