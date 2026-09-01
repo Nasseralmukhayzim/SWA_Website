@@ -9,11 +9,11 @@ using SWA.Domain.Content.Events;
 
 namespace SWA.Application.Features.Public.Events;
 
-public sealed record GetEventBySlugQuery(string Slug, string? Lang) : IRequest<EventDetailDto>, ICacheableQuery
+public sealed record GetEventBySlugQuery(string Slug, string Lang) : IRequest<EventDetailDto>, ICacheableQuery
 {
     public string CacheGroup => "Events";
     public string CacheKey => $"slug:{Slug}:{Lang}";
-    public TimeSpan CacheDuration => TimeSpan.FromMinutes(5);
+    public TimeSpan CacheDuration => CacheDurations.LongLived;
 }
 
 public sealed class GetEventBySlugQueryHandler(IRepository<Event> repository, PublicContentOptions options) : IRequestHandler<GetEventBySlugQuery, EventDetailDto>

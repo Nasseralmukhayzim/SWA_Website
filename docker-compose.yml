@@ -1,0 +1,19 @@
+# Local development only: single-node Elasticsearch with security/TLS disabled.
+# SQL Server and Redis are run outside this repo already; Elasticsearch is genuinely new
+# infrastructure with no existing container to join, so it gets its own compose file here.
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:9.5.1
+    container_name: swa-elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - xpack.security.http.ssl.enabled=false
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    ports:
+      - "9200:9200"
+    volumes:
+      - swa-es-data:/usr/share/elasticsearch/data
+
+volumes:
+  swa-es-data:

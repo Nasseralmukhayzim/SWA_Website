@@ -8,11 +8,11 @@ using SWA.Domain.Content.News;
 
 namespace SWA.Application.Features.Public.News;
 
-public sealed record GetNewsQuery(string? Lang, bool? IsFeatured, int Page = 1, int PageSize = 20) : IRequest<PagedResult<NewsListItemDto>>, ICacheableQuery
+public sealed record GetNewsQuery(string Lang, bool? IsFeatured, int Page = 1, int PageSize = 20) : IRequest<PagedResult<NewsListItemDto>>, ICacheableQuery
 {
     public string CacheGroup => "News";
     public string CacheKey => $"list:{Lang}:{IsFeatured}:{Page}:{PageSize}";
-    public TimeSpan CacheDuration => TimeSpan.FromMinutes(5);
+    public TimeSpan CacheDuration => CacheDurations.LongLived;
 }
 
 public sealed class GetNewsQueryHandler(IRepository<NewsArticle> repository, PublicContentOptions options) : IRequestHandler<GetNewsQuery, PagedResult<NewsListItemDto>>

@@ -2,6 +2,7 @@ using Microsoft.Extensions.FileProviders;
 using SWA.Api.Common;
 using SWA.Application;
 using SWA.Application.Common.Content;
+using SWA.Application.Common.Interfaces;
 using SWA.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -27,6 +28,21 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
+// Idempotent create-if-missing; failures here don't stop app boot — the search sync
+// background service retries this on its first tick, matching the fail-open philosophy
+// used for Redis (search is a nice-to-have, not something the site should go down over).
+using (var startupScope = app.Services.CreateScope())
+{
+    try
+    {
+        await startupScope.ServiceProvider.GetRequiredService<ISearchIndexer>().EnsureIndexAsync(default);
+    }
+    catch (Exception ex)
+    {
+        app.Logger.LogWarning(ex, "Failed to ensure the search index exists on startup.");
+    }
+}
 
 app.UseExceptionHandler(_ => { });
 
